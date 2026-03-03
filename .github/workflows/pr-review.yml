@@ -1,0 +1,30 @@
+name: PR Review (PR-Agent)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PR-Agent
+        run: pip install -U pr-agent
+
+      - name: Run review
+        env:
+          OPENAI__KEY: ${{ secrets.OPENAI_API_KEY }}
+          CONFIG__GIT_PROVIDER: github
+          GITHUB__USER_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: python -m pr_agent.cli --pr_url "$PR_URL" review
