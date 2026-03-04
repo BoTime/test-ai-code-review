@@ -38,7 +38,7 @@ jobs:
 
           python -u -m pr_agent.cli --pr_url "$PR_URL" review 2>&1 | tee pr-agent.log
 
-          if rg -n "Traceback|ERROR\\s+\\||Failed to review PR|RetryError|APIConnectionError" pr-agent.log; then
+          if grep -En "Traceback|ERROR[[:space:]]+\\||Failed to review PR|RetryError|APIConnectionError" pr-agent.log; then
             echo "::error::PR-Agent reported errors in logs"
             exit 1
           fi
